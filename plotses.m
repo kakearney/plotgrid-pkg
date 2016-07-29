@@ -83,8 +83,13 @@ mov = 3 + (dim==3);
 % Plots lines (first at the ends):
 [temp, FEorder] = sort(FE); clear temp
 FEorder = FEorder(end:-1:1);
-hlines = ones(N,1);
-haxes  = ones(N,1);
+if using_hg2(gcf)
+    hlines = gobjects(N,1);
+    haxes  = gobjects(N,1);
+else
+    hlines = ones(N,1);
+    haxes  = ones(N,1);
+end
 for n = FEorder              
  
  % Compress and move the fixed axis:
