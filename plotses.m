@@ -83,12 +83,12 @@ mov = 3 + (dim==3);
 % Plots lines (first at the ends):
 [temp, FEorder] = sort(FE); clear temp
 FEorder = FEorder(end:-1:1);
-if using_hg2(gcf)
-    hlines = gobjects(N,1);
-    haxes  = gobjects(N,1);
-else
+if verLessThan('matlab','8.4.0')
     hlines = ones(N,1);
     haxes  = ones(N,1);
+else
+    hlines = gobjects(N,1);
+    haxes  = gobjects(N,1);
 end
 for n = FEorder              
  
