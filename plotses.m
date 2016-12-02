@@ -61,6 +61,18 @@ function [hlines,haxes] = plotses(x,Y,varargin)
 N = size(Y,2); 
 
 % Entries:
+
+% Opt.lab = repmat(' ',N+1,1);
+% Opt.loc = 'l';    
+% Opt.k = 10;       
+% a = 4;     % Partitions for each axes 
+% b = 3;     % Movements
+% Ns = 0:N-1;
+% Opt.FE = rem(Ns,2);          
+% Opt.EE = Ns*b./(a+(N-1)*b); 
+% 
+% Opt = parsepv(Opt, varargin);
+
 [lab,loc,k,FE,EE] = check_entries(varargin,nargin-2,N);
 k = k/100;
 
