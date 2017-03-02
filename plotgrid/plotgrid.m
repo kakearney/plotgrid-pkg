@@ -190,7 +190,7 @@ h.fig = figure(figprop{:});
 nrow = sz(1);
 ncol = sz(2);
 
-if ~staggerx & ~staggery
+if ~staggerx && ~staggery
 
     for irow = 1:nrow
         for icol = 1:ncol
