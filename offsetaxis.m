@@ -119,7 +119,11 @@ for iax = 1:numel(hax)
                        'color', 'none', ...
                        'xcolor', col{iax});
         set(hax(iax), 'ycolor', col{iax}, 'ytick', []);
-        linkaxes([hax(iax) hy(iax)], 'y');
+
+        set(hy(iax), 'ylim', get(hax(iax), 'ylim'));
+        hlink = linkprop([hax(iax) hy(iax)], 'YLim');
+        setappdata(hax(iax), 'yoffsetlink', hlink);
+        
         switch Opt.yloc
             case {'lr', 'rl'}
                 set(hy(iax), 'box', 'on');
@@ -138,7 +142,11 @@ for iax = 1:numel(hax)
                        'color', 'none', ...
                        'ycolor', col{iax});
         set(hax(iax), 'xcolor', col{iax}, 'xtick', []);
-        linkaxes([hax(iax) hx(iax)], 'x');
+
+        set(hx(iax), 'xlim', get(hax(iax), 'xlim'));
+        hlink = linkprop([hax(iax) hx(iax)], 'XLim');
+        setappdata(hax(iax), 'xoffsetlink', hlink);
+        
         switch Opt.xloc
             case {'tb', 'bt'}
                 set(hx(iax), 'box', 'on');
