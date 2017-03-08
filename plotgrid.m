@@ -85,6 +85,7 @@ if ~setup
     end
     
     nin = nargin(Opt.function{1});
+    fun = Opt.function{1};
     funin = Opt.function(2:end);
     
     % Determine size of axis grid based on cell array inputs to function.
