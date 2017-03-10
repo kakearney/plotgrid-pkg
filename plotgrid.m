@@ -52,8 +52,6 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 
 % Copyright 2013 Kelly Kearney
 
-% TODO row and column labels don't work if you include x and y labels on
-% each axis
 
 
 %--------------------------
@@ -124,49 +122,6 @@ if Opt.staggery > 0 && Opt.staggerx > 0
     error('Cannot stagger both sets of axes');
 end
 
-% % Check for staggered axis indicators
-% 
-% isstr = cellfun(@ischar, axprops);
-% staggerx = cellfun(@(x) ischar(x) && strcmp(x, 'staggerx'), axprops);
-% axprops(staggerx) = [];
-% staggerx = any(staggerx);
-% 
-% staggery = cellfun(@(x) ischar(x) && strcmp(x, 'staggery'), axprops);
-% axprops(staggery) = [];
-% staggery = any(staggery);
-% 
-% if staggery & setup
-%     error('Cannot set up staggered axes without a plotting function');
-% end
-% 
-% % Check for sparse indicator
-% 
-% usesparse =  cellfun(@(x) ischar(x) && strcmp(x, 'sparse'), axprops);
-% axprops(usesparse) = [];
-% usesparse = any(usesparse);
-% 
-% if usesparse
-%     for ii = 1:nin
-%         isemp{ii} = cellfun('isempty', funin{ii});
-%     end
-%     isemp = cat(3, isemp{:});
-%     isemp = any(isemp, 3);
-% else
-%     isemp = false(size(funin{1}));
-% end
-
-% Check for figure properties
-
-% isstr = cellfun(@ischar, axprops);
-% isfigprop = cellfun(@(x) ischar(x) && strcmp(x, 'figprop'), axprops);
-% if any(isfigprop)
-%     idx = find(isfigprop);
-%     figprop = axprops{idx+1};
-%     axprops([idx idx+1]) = [];
-% else
-%     figprop = cell(0);
-% end
-
 % Check for output cell
 
 nout = length(Opt.outputs);
@@ -208,46 +163,6 @@ if Opt.staggerx > 0
     set(h.ax(:,2:end), 'ycolor', 'none');
 end
 
-    
-%     
-% 
-% 
-% if ~staggerx && ~staggery
-% 
-%     for irow = 1:nrow
-%         for icol = 1:ncol
-%             if isemp(irow,icol)
-% %                 h.ax(irow,icol) = subaxis(nrow, ncol, icol, irow, axprops{:});
-% %                 set(h.ax(irow,icol), 'visible', 'off');
-%             else
-%                 h.ax(irow,icol) = subaxis(nrow, ncol, icol, irow, axprops{:});
-%             end
-%         end
-%     end
-%     
-% end
-% 
-% if staggery
-%     
-%     htemp = plotgrid(fun, funin{:}, [], [], axprops{:});
-%     axis(htemp.ax(:), 'tight'); % Trying to eliminate space on x axis, since can't adjust after staggered
-%     xlim = get(htemp.ax, 'xlim');
-%     close(htemp.fig);
-%     xlim = minmax(cat(1, xlim{:}));
-%     
-%     for icol = 1:ncol
-%         axtemp(icol) = subaxis(1, ncol, icol, 1, axprops{:});
-%         [hl, h.ax(:,icol)] = plotses(xlim, rand(2,nrow));
-%         delete(hl);
-%     end
-%     h.ax = flipud(h.ax);
-%     
-% end
-% 
-% if staggerx
-%     error('Can''t stagger x axes yet... look into plotses bug');
-% end
-
 %--------------------------
 % Plot data
 %--------------------------
@@ -287,26 +202,22 @@ end
 % Add row and column labels
 %--------------------------
 
-% TODO: use user-specified offsets
+pos = reshape(get(h.ax, 'Position'), size(h.ax));
+xmid = cellfun(@(x) x(1)+x(3)/2, pos(1,:));
+ymid = cellfun(@(x) x(2)+x(4)/2, pos(:,1));
+xleft = pos{1,1}(1) - (pos{1,end}(1)+pos{1,end}(3) - pos{1,1}(1))*Opt.rowlabeloffset;
+ytop = pos{1,1}(4)+pos{1,1}(2) + (pos{1,1}(2)+pos{1,1}(4) - pos{end,1}(2))*Opt.collabeloffset;
 
-Subax = get(h.fig, 'UserData');
-
-xpos = linspace(Subax.MarginLeft, 1-Subax.MarginRight, Subax.cols+1);
-ypos = linspace(1-Subax.MarginTop, Subax.MarginBottom, Subax.rows+1);
-left = xpos(1)/2;
-top = (ypos(1)+1)/2;
-xpos = (xpos(1:end-1) + xpos(2:end))./2;
-ypos = (ypos(1:end-1) + ypos(2:end))./2;
 
 labelax = axes('position', [0 0 1 1], 'visible', 'off');
 set(labelax, 'xlim', [0 1], 'ylim', [0 1], 'handlevisibility', 'off');
 
 if ~isempty(Opt.rowlabel)
-    h.rlab = text(left*ones(size(ypos)), ypos, Opt.rowlabel, 'parent', labelax, 'horiz', 'center', 'rotation', 90);
+    h.rlab = text(xleft*ones(Opt.size(1),1), ymid, Opt.rowlabel, 'parent', labelax, 'horiz', 'center', 'rotation', 90);
 end
    
 if ~isempty(Opt.collabel)
-    h.clab = text(xpos, top*ones(size(xpos)), Opt.collabel, 'parent', labelax, 'horiz', 'center');
+    h.clab = text(xmid, ytop*ones(1,Opt.size(2)), Opt.collabel, 'parent', labelax, 'horiz', 'center');
 end
 
 
