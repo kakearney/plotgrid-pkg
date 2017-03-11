@@ -1,42 +1,83 @@
 function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %PLOTGRID Plots data from cell array in grid pattern of axes
 %
-% h = plotgrid(fun, in1, in2, in3, ...)
-% h = plotgrid(fun, in1, in2, in3, ..., rowname, colname)
-% h = plotgrid(fun, in1, in2, in3, ..., rowname, colname, prop, val, ...)
+% h = plotgrid(...)
 %
-% Input arguments:
+% This function sets up a grid of axes, returning handles in arrays with
+% the same geometry as the axes themselves, making it easier to reference
+% plotted objects.  It allows for several customization options, including
+% the margins around and spacing between axes, optional row and column
+% labels, and options to offset axes from each other.
 %
-%   fun:        function handle of plotting function.  Must have an
-%               explicit number of input arguments, so if using something
-%               that can take a variable number, use an anonymous function
-%               to specify (for example, @(y) plot(y) or @(x,y) plot(x,y)
-%               instead of @plot).
+% Optional input arguments (passed as parameter/value pairs):
 %
-%               or this can be the string 'setup', which just sets up the
-%               axes without plotting any data, 
+%   size:           1 x 2 vector, indicating the number of rows (n) and
+%                   columns (m), respectively, to add to the figure.
+%                   Default: [1 1]
 %
-%   in#:        Equally-sized 2D cell arrays (n x m), with values
-%               corresponding to the input for the function handle. (If
-%               'setup', then a single cell array with the desired number
-%               of rows and columns should be passed).  The figure will
-%               have the same number of rows and columns as these cell
-%               arrays.  
+%   function:       cell array, where first element is a function handle to
+%                   a plotting function, and remaining elements are n x m
+%                   cell arrays of input data to that function.  A n x m
+%                   grid of axes will be created, with data plotted to
+%                   those axes corresponding to the respective input in the
+%                   cell arrays. For example, an input of {@(y) plot(y),
+%                   {rand(10,1) 1:10}} will plot the two line plots in
+%                   side-by-side axes.  If included, the size of the input
+%                   data cell arrays overrides the 'size' input to set the
+%                   axes geometry.  
+%                   Default: {}
 %
-%   rowname:    1 x n cell array of strings,  labels for each row.  If none
-%               desired, pass empty array
+%   staggery:       scalar. If non-zero, the y-axis of every other row
+%                   (starting second from the bottom) will be offset by the
+%                   specified fraction (as a fraction of the axis width,
+%                   see offsetaxis.m).  This can be combined with a
+%                   negative vertical spacing value to create overlapping
+%                   axes. 
+%                   Default: 0
 %
-%   colname:    1 x m cell array of strings, labels for each column.  If none
-%               desired, pass empty array.
+%   staggerx:       scalar.  If non-zero, the x-axis of every other column
+%                   (starting second from the left) will be offset by the
+%                   specific fraction (as a fraction of the axis height).
+%                   This can be combined with a negative horizontal spacing
+%                   to create overlapping axes.
+%                   Default: 0
 %
-% Optional input variables:
+%   rowlabel:       n x 1 cell array of strings, text labels to be applied
+%                   like a y-axis label to the left of each row in the
+%                   grid. If empty, no labels are added.  Rows are numbered
+%                   from top to bottom.    
+%                   Default: {}
 %
-%   'staggery': if included, left side of axes in every other row will be
-%               indented, with some overlap in vertical extent (see
-%               plotses.m)  
+%   collabel:       m x 1 cell array of strings, text labels to be applied
+%                   like titles to each column in the grid. If empty, no
+%                   labels are added.
+%                   Default: {} 
 %
-%   Also, any of the positioning parameters accepted by subaxis can be
-%   passed as parameter.value pairs.
+%   rowlabeloffset: scalar, distance row labels should be offset from the
+%                   grid of axes, expressed as a fraction of the entire
+%                   axis grid width (right of column m - left of column 1)
+%                   Default: 0.05
+%
+%   collabeloffset: scalar, distance column labels should be offset from the
+%                   grid of axes, expressed as a fraction of the entire
+%                   axis grid height (top of column 1 - botoom of column n)
+%                   Default: 0.05
+%
+%   figprop:        cell array holding parameter/value pairs of figure
+%                   properties to apply to the newly-created figure. 
+%
+%   outputs:        cell array of strings.  If the 'function' input is
+%                   supplied, this can be used to save any outputs
+%                   returned by the called function.  The length of this
+%                   cell array should match the number of outputs of the
+%                   returned by the supplied function.  Each string will be
+%                   used as the name of a field in the output structure,
+%                   and will hold an n x m cell array holding the output
+%                   associated with each axis.
+%
+%   In addition to the above parameters, any parameter accepted by the
+%   subaxis function (spacing, padding, margin), or their abbreviations,
+%   with the exception of 'Holdaxis', can be included. 
 %
 % Output variables:
 %
@@ -44,14 +85,25 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %
 %               fig:    figure
 %               
-%               ax:     n x m array, axis handles
+%               ax:     n x m array, axis handles.  Geometry of this array
+%                       matches the geometry of the axes on the plot, e.g.
+%                       h.ax(1,:) refers to the top row of axes.
 %
 %               rlab:   n x 1 array, row label text handles
 %
 %               clab:   m x 1 array, column label text handles
+%
+%               yax:    floor(n/2) x m array, axis handles to offset y
+%                       axes.  These are linked to the axes in
+%                       h.ax(end-1:-2:1,:).  These are for decoration only;
+%                       see offsetaxis.m for details.
+%
+%               xax:    n x floor(m/2) array, axis handles to offset x
+%                       axes.  These are linked to the axes in
+%                       h.ax(:,2:2:end).  These are for decoration only;
+%                       see offsetaxis.m for details.
 
-% Copyright 2013 Kelly Kearney
-
+% Copyright 2013-2017 Kelly Kearney
 
 
 %--------------------------
