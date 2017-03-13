@@ -1,0 +1,482 @@
+
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+--><title>plotgrid.m: Set up (and plot to) a grid of axes</title><meta name="generator" content="MATLAB 9.1"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-03-13"><meta name="DC.source" content="./readmeExtras/README.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+</style></head><body><div class="content"><h1><tt>plotgrid.m</tt>: Set up (and plot to) a grid of axes</h1><!--introduction--><p>Author: Kelly Kearney</p><p>This repository includes the code for the <tt>plotgrid.m</tt> Matlab function, along with all dependent functions required to run it.</p><p>This function sets up a grid of axes, returning handles in arrays with the same geometry as the axes themselves, making it easier to reference plotted objects.  It allows for several customization options, including the margins around and spacing between axes, optional row and column labels, and options to offset axes from each other.</p><p>This function also provides a quick method of applying the same plotting function with different data for each axis, via cell array input. See examples below for further details.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Getting started</a></li><li><a href="#2">Syntax</a></li><li><a href="#3">Description</a></li><li><a href="#4">Examples: Simple axis setup</a></li><li><a href="#7">Examples: plotting data</a></li><li><a href="#12">Examples: Staggered axes</a></li><li><a href="#17">Contributions</a></li></ul></div><h2 id="1">Getting started</h2><p><b>Prerequisites</b></p><p>This function requires Matlab R14 or later.</p><p><b>Downloading and installation</b></p><p>This code can be downloaded from <a href="https://github.com/kakearney/plotgrid-pkg/">Github</a>.</p><p><b>Matlab Search Path</b></p><p>The following folders need to be added to your Matlab Search path (via <tt>addpath</tt>, <tt>pathtool</tt>, etc.):</p><pre>plotgrid-pkg/plotgrid
+plotgrid-pkg/offsetaxis
+plotgrid-pkg/subaxis</pre><h2 id="2">Syntax</h2><pre>h = plotgrid(...)</pre><p>See function header help for a full description of the input parameters and output variable from this function.</p><h2 id="3">Description</h2><p><tt>h = plotgrid('size', [n m])</tt> creates a new figure with <tt>n*m</tt> axes arranged in <tt>n</tt> rows and <tt>m</tt> columns, using the default margin, spacing, and padding set by the <tt>subaxis.m</tt> function.</p><p><tt>h = plotgrid('function', {@plotfun, x1, x2, ...})</tt>  plots the data in cell arrays <tt>x1</tt>, <tt>x2</tt>, etc. to a grid of axes, using the plotting function handle supplied.  The size of the main input cell array should be 1 x nin+1, where nin is the number of inputs required by <tt>plotfun</tt>. Each element of the <tt>x1</tt>, <tt>x2</tt>, etc. cell arrays should match the requirements of the plotting function inputs.  See examples below.</p><p><tt>h = plotgrid(..., 'rowlabel', rows, 'collabel', cols)</tt> adds text labels to the left and/or top of each row and/or column, respectively.  <tt>rows</tt> should be an <tt>n x 1</tt> cell array of strings, and <tt>cols</tt> should be a <tt>m x 1</tt> cell array of strings.</p><p><tt>h = plotgrid(..., 'rowlabel', rows, 'rowlabeloffset', offset)</tt> and/or <tt>h = plotgrid(..., 'collabel', cols, 'collabeloffset', offset)</tt> changes the distance the row and/or column labels are placed from the axes area.</p><p><tt>h = plotgrid(..., 'staggerx', offset)</tt> and/or <tt>h = plotgrid(..., 'staggerx', offset)</tt> adds an offset x/y axis to every other column/row, offset from each axis by the specified offset fraction.  See examples below.</p><p><tt>h = plotgrid(..., 'figprop', {param1, val1, param2, val2, ...})</tt> applies the specified figure properties to the newly-created figure.</p><p><tt>h = plotgrid(..., 'function], {@plotfun, in, ...}, 'outputs', {'out1', 'out2',...})</tt> returns the outputs of the plotting functions as fields in the <tt>h</tt> output structure, with fieldnames set by the specified strings.</p><h2 id="4">Examples: Simple axis setup</h2><p>In it's simplest form, this function can be used to set up a grid of axes:</p><pre class="codeinput">h = plotgrid(<span class="string">'size'</span>, [3 4])
+</pre><pre class="codeoutput">
+h = 
+
+struct with fields:
+
+fig: [1&times;1 Figure]
+ax: [3&times;4 Axes]
+
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_01.png" alt=""> <p>The axis handles in the output structure array are arranged in the same geometry as the axes themselves, making it easy to reference handles as a group.  For example, we can turn of tick labels for just the interior axes:</p><pre class="codeinput">set(h.ax(:,2:end), <span class="string">'yticklabel'</span>, <span class="string">''</span>);
+set(h.ax(1:end-1,:), <span class="string">'xticklabel'</span>, <span class="string">''</span>);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_02.png" alt=""> <p>This function uses <a href="https://www.mathworks.com/matlabcentral/fileexchange/3696-subaxis-subplot">subaxis</a> to create the axes, so you can use its various options to customize the margin around the axes and the spacing between them.  This can be very useful when setting up a grid with lots of small subaxes:</p><pre class="codeinput">h = plotgrid(<span class="string">'size'</span>, [10 10], <span class="string">'SpacingVert'</span>, 0.01, <span class="keyword">...</span>
+<span class="string">'SpacingHoriz'</span>, 0, <span class="string">'MarginRight'</span>, 0.02, <span class="string">'MarginBottom'</span>, 0.05);
+set(h.ax(:,2:end), <span class="string">'ytick'</span>, []);
+set(h.ax(1:end-1,:), <span class="string">'xtick'</span>, []);
+set(h.ax, <span class="string">'box'</span>, <span class="string">'off'</span>);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_03.png" alt=""> <h2 id="7">Examples: plotting data</h2><p>We can also use <tt>plotgrid</tt> to plot different datasets using a common plotting function.</p><pre class="codeinput"><span class="comment">% Create some variants on the peaks data</span>
+
+ngrd = 5:10:50;
+amp = 1:5;
+[ngrd, amp] = meshgrid(ngrd, amp);
+[xp,yp,zp] = arrayfun(@(n,a) peaks(n), ngrd, amp, <span class="string">'uni'</span>, 0);
+zp = cellfun(@(a,b) a*b, zp, num2cell(amp), <span class="string">'uni'</span>, 0);
+</pre><p>Our data to be plotted consists of 25 different variants of the x, y, and z data:</p><pre class="codeinput">xp
+yp
+zp
+</pre><pre class="codeoutput">
+xp =
+
+5&times;5 cell array
+
+Columns 1 through 4
+
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+
+Column 5
+
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+
+
+yp =
+
+5&times;5 cell array
+
+Columns 1 through 4
+
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+
+Column 5
+
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+
+
+zp =
+
+5&times;5 cell array
+
+Columns 1 through 4
+
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+
+Column 5
+
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+[45&times;45 double]
+
+</pre><p>Plotting now mimics the arrangement of elements in <tt>xp</tt>, <tt>yp</tt>, and <tt>zp</tt>, applying the same function to each element of the cell array:</p><pre class="codeinput">h = plotgrid(<span class="string">'function'</span>, {@(x,y,z) pcolor(x,y,z), xp, yp, zp}, <span class="keyword">...</span>
+<span class="string">'sp'</span>, 0.03, <span class="keyword">...</span>
+<span class="string">'mb'</span>, 0.03, <span class="keyword">...</span>
+<span class="string">'mr'</span>, 0.03, <span class="keyword">...</span>
+<span class="string">'rowlabel'</span>, cellstr(num2str(amp(:,1), <span class="string">'amp=%d'</span>)), <span class="keyword">...</span>
+<span class="string">'collabel'</span>, cellstr(num2str(ngrd(1,:)', <span class="string">'ngrd=%d'</span>)), <span class="keyword">...</span>
+<span class="string">'rowlabeloffset'</span>, 0.06, <span class="keyword">...</span>
+<span class="string">'outputs'</span>, {<span class="string">'pcol'</span>});
+
+<span class="comment">% Some cosmetic adjustments to the axes</span>
+
+set(h.ax, <span class="string">'xlim'</span>, [-3 3], <span class="string">'ylim'</span>, [-3 3], <span class="string">'clim'</span>, [-40 40], <span class="keyword">...</span>
+<span class="string">'fontsize'</span>, 6);
+arrayfun(@(ax) shading(ax, <span class="string">'flat'</span>), h.ax);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_04.png" alt=""> <p>The above also demonstrates how to return the handles of plotted objects via the <tt>'outputs'</tt> parameter.  The <tt>pcol</tt> field in the output structure now holds the handles to the surface objects created by <tt>pcolor</tt>:</p><pre class="codeinput">h.pcol
+</pre><pre class="codeoutput">
+ans =
+
+5&times;5 cell array
+
+Columns 1 through 4
+
+[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+
+Column 5
+
+[1&times;1 Surface]
+[1&times;1 Surface]
+[1&times;1 Surface]
+[1&times;1 Surface]
+[1&times;1 Surface]
+
+</pre><p>To allow for any-sized outputs from the plotting function, the default behavior is to return these output fields in cell arrays.  For graphics handle output like in this example, it's often useful to convert back to plain arrays:</p><pre class="codeinput">h.pcol = reshape(cat(1, h.pcol{:}), size(h.pcol));
+h.pcol
+</pre><pre class="codeoutput">
+ans = 
+
+5&times;5 Surface array:
+
+Surface    Surface    Surface    Surface    Surface
+Surface    Surface    Surface    Surface    Surface
+Surface    Surface    Surface    Surface    Surface
+Surface    Surface    Surface    Surface    Surface
+Surface    Surface    Surface    Surface    Surface
+
+</pre><h2 id="12">Examples: Staggered axes</h2><p>The <tt>staggerx</tt> and <tt>staggery</tt> options are intended to allow overlap of axes (though that's not a requirement).  This may be desired when plotting line plots where curves follow the same basic shape, and axes therefore don't need all the extra whitespace provided in a standard stacked axis setup.</p><p>For example, let's plot some sinusoidal data with varying amplitudes:</p><pre class="codeinput">theta = linspace(0, 2*pi, 50);
+amp = [1:10 9:-1:1];
+y = bsxfun(@times, cos(theta), -amp');
+</pre><p>Even with no vertical spacing, and unecessary axis lines removed, there's still a lot of unused space in this figure, and the differences in the amplitudes of the curves are difficult to see because the height of each axis is so small.</p><pre class="codeinput">h = plotgrid(<span class="string">'function'</span>, {@(y) plot(theta, y), num2cell(y,2)}, <span class="keyword">...</span>
+<span class="string">'sv'</span>, 0);
+set(h.ax, <span class="string">'ylim'</span>, [-10 10], <span class="string">'xlim'</span>, [0 2*pi], <span class="string">'box'</span>, <span class="string">'off'</span>);
+set(h.ax(1:end-1), <span class="string">'xcolor'</span>, <span class="string">'none'</span>);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_05.png" alt=""> <p>We can allow overlap of the axes via a negative spacing value.  This increases the height of each axis, allowing a bit more curvature to be seen in the lines.  But now are y-axes are pretty illegible:</p><pre class="codeinput">h = plotgrid(<span class="string">'function'</span>, {@(y) plot(theta, y), num2cell(y,2)}, <span class="keyword">...</span>
+<span class="string">'sv'</span>, -0.03);
+set(h.ax, <span class="string">'ylim'</span>, [-10 10], <span class="string">'xlim'</span>, [0 2*pi], <span class="keyword">...</span>
+<span class="string">'box'</span>, <span class="string">'off'</span>, <span class="string">'color'</span>, <span class="string">'none'</span>, <span class="string">'fontsize'</span>, 6);
+set(h.ax(1:end-1), <span class="string">'xcolor'</span>, <span class="string">'none'</span>);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_06.png" alt=""> <p>The <tt>staggery</tt> option offsets every other y-axis to keep things more legible.  It also automatically turns off the x-axis of all but the bottom axis (which I did manually in the above example).</p><pre class="codeinput">h = plotgrid(<span class="string">'function'</span>, {@(y) plot(theta, y), num2cell(y,2)}, <span class="keyword">...</span>
+<span class="string">'sv'</span>, -0.03, <span class="string">'staggery'</span>, 0.05, <span class="string">'outputs'</span>, {<span class="string">'ln'</span>});
+set(h.ax, <span class="string">'ylim'</span>, [-10 10], <span class="string">'xlim'</span>, [0 2*pi], <span class="keyword">...</span>
+<span class="string">'color'</span>, <span class="string">'none'</span>, <span class="string">'fontsize'</span>, 6);
+set(h.yax, <span class="string">'fontsize'</span>, 6);
+
+
+<span class="comment">% Some color can help match up lines to axes, if necessary:</span>
+
+set(h.yax, <span class="string">'ycolor'</span>, <span class="string">'r'</span>);
+set(h.ax(end:-2:1), <span class="string">'ycolor'</span>, get(h.ln{end}, <span class="string">'color'</span>));
+h.ln = reshape(cat(1, h.ln{:}), size(h.ln));
+set(h.ln(end-1:-2:1), <span class="string">'color'</span>, <span class="string">'r'</span>);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_07.png" alt=""> <p>You can also pair this with unclipped data and smaller y-axs ranges to emphasize patterns even more:</p><pre class="codeinput">set(h.ax, <span class="string">'clipping'</span>, <span class="string">'off'</span>, <span class="string">'ylim'</span>, [-2 2]);
+</pre><img vspace="5" hspace="5" src="./readmeExtras/README_08.png" alt=""> <h2 id="17">Contributions</h2><p>Community contributions to this package are welcome!</p><p>To report bugs, please submit <a href="https://github.com/kakearney/example-pkg/issues">an issue</a> on GitHub and include:</p><div><ul><li>your operating system</li><li>your version of Matlab and all relevant toolboxes (type <tt>ver</tt> at the Matlab command line to get this info)</li><li>code/data to reproduce the error or buggy behavior, and the full text of any error messages received</li></ul></div><p>Please also feel free to submit enhancement requests, or to send pull requests (via GitHub) for bug fixes or new features.</p><p>I do monitor the MatlabCentral FileExchange entry for any issues raised in the comments, but would prefer to track issues on GitHub.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% |plotgrid.m|: Set up (and plot to) a grid of axes
+% Author: Kelly Kearney
+%
+% This repository includes the code for the |plotgrid.m| Matlab function,
+% along with all dependent functions required to run it. 
+%
+% This function sets up a grid of axes, returning handles in arrays with
+% the same geometry as the axes themselves, making it easier to reference
+% plotted objects.  It allows for several customization options, including
+% the margins around and spacing between axes, optional row and column
+% labels, and options to offset axes from each other.
+%
+% This function also provides a quick method of applying the same plotting
+% function with different data for each axis, via cell array input. See
+% examples below for further details. 
+%
+%% Getting started
+%
+% *Prerequisites*
+%
+% This function requires Matlab R14 or later.
+%
+% *Downloading and installation*
+%
+% This code can be downloaded from <https://github.com/kakearney/plotgrid-pkg/ Github>.  
+%
+% *Matlab Search Path*
+%
+% The following folders need to be added to your Matlab Search path (via
+% |addpath|, |pathtool|, etc.):
+%
+%  plotgrid-pkg/plotgrid
+%  plotgrid-pkg/offsetaxis
+%  plotgrid-pkg/subaxis
+
+%% Syntax
+%
+%  h = plotgrid(...)
+%
+% See function header help for a full description of the input parameters and
+% output variable from this function.
+% 
+%% Description
+% 
+% |h = plotgrid('size', [n m])| creates a new figure with |n*m| axes
+% arranged in |n| rows and |m| columns, using the default margin, spacing,
+% and padding set by the |subaxis.m| function.
+%
+% |h = plotgrid('function', {@plotfun, x1, x2, ...})|  plots the data in
+% cell arrays |x1|, |x2|, etc. to a grid of axes, using the plotting
+% function handle supplied.  The size of the main input cell array should
+% be 1 x nin+1, where nin is the number of inputs required by |plotfun|.
+% Each element of the |x1|, |x2|, etc. cell arrays should match the
+% requirements of the plotting function inputs.  See examples below.
+%
+% |h = plotgrid(..., 'rowlabel', rows, 'collabel', cols)| adds text labels
+% to the left and/or top of each row and/or column, respectively.  |rows|
+% should be an |n x 1| cell array of strings, and |cols| should be a |m x
+% 1| cell array of strings.
+%
+% |h = plotgrid(..., 'rowlabel', rows, 'rowlabeloffset', offset)| and/or
+% |h = plotgrid(..., 'collabel', cols, 'collabeloffset', offset)|
+% changes the distance the row and/or column labels are placed from the
+% axes area.
+%
+% |h = plotgrid(..., 'staggerx', offset)| and/or |h = plotgrid(...,
+% 'staggerx', offset)| adds an offset x/y axis to every other column/row,
+% offset from each axis by the specified offset fraction.  See examples
+% below.
+%
+% |h = plotgrid(..., 'figprop', {param1, val1, param2, val2, ...})| applies
+% the specified figure properties to the newly-created figure.
+%
+% |h = plotgrid(..., 'function], {@plotfun, in, ...}, 'outputs', {'out1',
+% 'out2',...})| returns the outputs of the plotting functions as
+% fields in the |h| output structure, with fieldnames set by the specified
+% strings.
+
+%% Examples: Simple axis setup
+%
+% In it's simplest form, this function can be used to set up a grid of
+% axes: 
+
+h = plotgrid('size', [3 4])
+
+%%
+% The axis handles in the output structure array are arranged in the same
+% geometry as the axes themselves, making it easy to reference handles as a
+% group.  For example, we can turn of tick labels for just the interior
+% axes:
+
+set(h.ax(:,2:end), 'yticklabel', '');
+set(h.ax(1:end-1,:), 'xticklabel', '');
+
+%% 
+% This function uses
+% <https://www.mathworks.com/matlabcentral/fileexchange/3696-subaxis-subplot
+% subaxis> to create the axes, so you can use its various options to
+% customize the margin around the axes and the spacing between them.  This
+% can be very useful when setting up a grid with lots of small subaxes:
+
+h = plotgrid('size', [10 10], 'SpacingVert', 0.01, ...
+'SpacingHoriz', 0, 'MarginRight', 0.02, 'MarginBottom', 0.05);
+set(h.ax(:,2:end), 'ytick', []);
+set(h.ax(1:end-1,:), 'xtick', []);
+set(h.ax, 'box', 'off');
+
+%% Examples: plotting data
+%
+% We can also use |plotgrid| to plot different datasets using a common
+% plotting function.  
+
+% Create some variants on the peaks data
+
+ngrd = 5:10:50;
+amp = 1:5;
+[ngrd, amp] = meshgrid(ngrd, amp);
+[xp,yp,zp] = arrayfun(@(n,a) peaks(n), ngrd, amp, 'uni', 0);
+zp = cellfun(@(a,b) a*b, zp, num2cell(amp), 'uni', 0);
+
+%%
+% Our data to be plotted consists of 25 different variants of the x, y, and
+% z data:
+
+xp
+yp
+zp
+
+%%
+% Plotting now mimics the arrangement of elements in |xp|, |yp|, and |zp|,
+% applying the same function to each element of the cell array:
+
+h = plotgrid('function', {@(x,y,z) pcolor(x,y,z), xp, yp, zp}, ...
+'sp', 0.03, ...
+'mb', 0.03, ...
+'mr', 0.03, ...
+'rowlabel', cellstr(num2str(amp(:,1), 'amp=%d')), ...
+'collabel', cellstr(num2str(ngrd(1,:)', 'ngrd=%d')), ...
+'rowlabeloffset', 0.06, ...
+'outputs', {'pcol'});
+
+% Some cosmetic adjustments to the axes 
+
+set(h.ax, 'xlim', [-3 3], 'ylim', [-3 3], 'clim', [-40 40], ...
+'fontsize', 6);
+arrayfun(@(ax) shading(ax, 'flat'), h.ax);
+
+%%
+% The above also demonstrates how to return the handles of plotted objects
+% via the |'outputs'| parameter.  The |pcol| field in the output structure
+% now holds the handles to the surface objects created by |pcolor|:
+
+h.pcol
+
+%%
+% To allow for any-sized outputs from the plotting function, the default
+% behavior is to return these output fields in cell arrays.  For graphics
+% handle output like in this example, it's often useful to convert back to
+% plain arrays:
+
+h.pcol = reshape(cat(1, h.pcol{:}), size(h.pcol));
+h.pcol
+
+%% Examples: Staggered axes
+% 
+% The |staggerx| and |staggery| options are intended to allow overlap of
+% axes (though that's not a requirement).  This may be desired when
+% plotting line plots where curves follow the same basic shape, and axes
+% therefore don't need all the extra whitespace provided in a standard
+% stacked axis setup.    
+%
+% For example, let's plot some sinusoidal data with varying amplitudes:
+
+theta = linspace(0, 2*pi, 50);
+amp = [1:10 9:-1:1];
+y = bsxfun(@times, cos(theta), -amp');
+
+%%
+% Even with no vertical spacing, and unecessary axis lines removed, there's
+% still a lot of unused space in this figure, and the differences in the
+% amplitudes of the curves are difficult to see because the height of each
+% axis is so small.
+
+h = plotgrid('function', {@(y) plot(theta, y), num2cell(y,2)}, ...
+'sv', 0);
+set(h.ax, 'ylim', [-10 10], 'xlim', [0 2*pi], 'box', 'off');
+set(h.ax(1:end-1), 'xcolor', 'none');
+
+%%
+% We can allow overlap of the axes via a negative spacing value.  This
+% increases the height of each axis, allowing a bit more curvature to be
+% seen in the lines.  But now are y-axes are pretty illegible:
+
+h = plotgrid('function', {@(y) plot(theta, y), num2cell(y,2)}, ...
+'sv', -0.03);
+set(h.ax, 'ylim', [-10 10], 'xlim', [0 2*pi], ...
+'box', 'off', 'color', 'none', 'fontsize', 6);
+set(h.ax(1:end-1), 'xcolor', 'none');
+
+%%
+% The |staggery| option offsets every other y-axis to keep things more
+% legible.  It also automatically turns off the x-axis of all but the
+% bottom axis (which I did manually in the above example).
+
+h = plotgrid('function', {@(y) plot(theta, y), num2cell(y,2)}, ...
+'sv', -0.03, 'staggery', 0.05, 'outputs', {'ln'});
+set(h.ax, 'ylim', [-10 10], 'xlim', [0 2*pi], ...
+'color', 'none', 'fontsize', 6);
+set(h.yax, 'fontsize', 6);
+
+
+% Some color can help match up lines to axes, if necessary:
+
+set(h.yax, 'ycolor', 'r');
+set(h.ax(end:-2:1), 'ycolor', get(h.ln{end}, 'color'));
+h.ln = reshape(cat(1, h.ln{:}), size(h.ln));
+set(h.ln(end-1:-2:1), 'color', 'r');
+
+%%
+% You can also pair this with unclipped data and smaller y-axs ranges to
+% emphasize patterns even more:  
+
+set(h.ax, 'clipping', 'off', 'ylim', [-2 2]);
+
+%% Contributions
+%
+% Community contributions to this package are welcome!
+% 
+% To report bugs, please submit
+% <https://github.com/kakearney/example-pkg/issues an issue> on GitHub and
+% include:  
+% 
+% * your operating system
+% * your version of Matlab and all relevant toolboxes (type |ver| at the Matlab command line to get this info)  
+% * code/data to reproduce the error or buggy behavior, and the full text of any error messages received 
+% 
+% Please also feel free to submit enhancement requests, or to send pull
+% requests (via GitHub) for bug fixes or new features. 
+% 
+% I do monitor the MatlabCentral FileExchange entry for any issues raised
+% in the comments, but would prefer to track issues on GitHub. 
+% 
+
+
+##### SOURCE END #####
+--></body></html>

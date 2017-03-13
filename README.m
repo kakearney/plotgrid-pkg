@@ -10,9 +10,9 @@
 % the margins around and spacing between axes, optional row and column
 % labels, and options to offset axes from each other.
 %
-% This function also provides a quick method of applying the same function
-% to multiple axes using cell array input.  See examples below for further
-% details.
+% This function also provides a quick method of applying the same plotting
+% function with different data for each axis, via cell array input. See
+% examples below for further details. 
 %
 %% Getting started
 %
@@ -29,26 +29,64 @@
 % The following folders need to be added to your Matlab Search path (via
 % |addpath|, |pathtool|, etc.):
 %
-%  TODO
+%  plotgrid-pkg/plotgrid
+%  plotgrid-pkg/offsetaxis
+%  plotgrid-pkg/subaxis
 
 %% Syntax
 %
 %  h = plotgrid(...)
-% 
-% See function header help for a description of the input parameters and
+%
+% See function header help for a full description of the input parameters and
 % output variable from this function.
+% 
+%% Description
+% 
+% |h = plotgrid('size', [n m])| creates a new figure with |n*m| axes
+% arranged in |n| rows and |m| columns, using the default margin, spacing,
+% and padding set by the |subaxis.m| function.
+%
+% |h = plotgrid('function', {@plotfun, x1, x2, ...})|  plots the data in
+% cell arrays |x1|, |x2|, etc. to a grid of axes, using the plotting
+% function handle supplied.  The size of the main input cell array should
+% be 1 x nin+1, where nin is the number of inputs required by |plotfun|.
+% Each element of the |x1|, |x2|, etc. cell arrays should match the
+% requirements of the plotting function inputs.  See examples below.
+%
+% |h = plotgrid(..., 'rowlabel', rows, 'collabel', cols)| adds text labels
+% to the left and/or top of each row and/or column, respectively.  |rows|
+% should be an |n x 1| cell array of strings, and |cols| should be a |m x
+% 1| cell array of strings.
+%
+% |h = plotgrid(..., 'rowlabel', rows, 'rowlabeloffset', offset)| and/or
+% |h = plotgrid(..., 'collabel', cols, 'collabeloffset', offset)|
+% changes the distance the row and/or column labels are placed from the
+% axes area.
+%
+% |h = plotgrid(..., 'staggerx', offset)| and/or |h = plotgrid(...,
+% 'staggerx', offset)| adds an offset x/y axis to every other column/row,
+% offset from each axis by the specified offset fraction.  See examples
+% below.
+%
+% |h = plotgrid(..., 'figprop', {param1, val1, param2, val2, ...})| applies
+% the specified figure properties to the newly-created figure.
+%
+% |h = plotgrid(..., 'function], {@plotfun, in, ...}, 'outputs', {'out1',
+% 'out2',...})| returns the outputs of the plotting functions as
+% fields in the |h| output structure, with fieldnames set by the specified
+% strings.
 
 %% Examples: Simple axis setup
 %
 % In it's simplest form, this function can be used to set up a grid of
 % axes: 
 
-h = plotgrid('size', [3 2])
+h = plotgrid('size', [3 4])
 
 %%
 % The axis handles in the output structure array are arranged in the same
 % geometry as the axes themselves, making it easy to reference handles as a
-% group.  For example, we can turn of tick marks for just the interior
+% group.  For example, we can turn of tick labels for just the interior
 % axes:
 
 set(h.ax(:,2:end), 'yticklabel', '');
@@ -114,12 +152,22 @@ arrayfun(@(ax) shading(ax, 'flat'), h.ax);
 
 h.pcol
 
+%%
+% To allow for any-sized outputs from the plotting function, the default
+% behavior is to return these output fields in cell arrays.  For graphics
+% handle output like in this example, it's often useful to convert back to
+% plain arrays:
+
+h.pcol = reshape(cat(1, h.pcol{:}), size(h.pcol));
+h.pcol
+
 %% Examples: Staggered axes
 % 
 % The |staggerx| and |staggery| options are intended to allow overlap of
-% axes.  This may be desired when plotting line plots where curves follow
-% the same basic shape, and axes therefore don't need all the extra
-% whitespace provided in a standard stacked axis setup. 
+% axes (though that's not a requirement).  This may be desired when
+% plotting line plots where curves follow the same basic shape, and axes
+% therefore don't need all the extra whitespace provided in a standard
+% stacked axis setup.    
 %
 % For example, let's plot some sinusoidal data with varying amplitudes:
 
@@ -130,8 +178,8 @@ y = bsxfun(@times, cos(theta), -amp');
 %%
 % Even with no vertical spacing, and unecessary axis lines removed, there's
 % still a lot of unused space in this figure, and the differences in the
-% amplitudes of the curves are difficult to see because each the height of
-% each axis is so small. 
+% amplitudes of the curves are difficult to see because the height of each
+% axis is so small.
 
 h = plotgrid('function', {@(y) plot(theta, y), num2cell(y,2)}, ...
     'sv', 0);
@@ -151,8 +199,8 @@ set(h.ax(1:end-1), 'xcolor', 'none');
 
 %%
 % The |staggery| option offsets every other y-axis to keep things more
-% legible.  It also automatically turns off the axis x-axis of all but the
-% bottom axis.
+% legible.  It also automatically turns off the x-axis of all but the
+% bottom axis (which I did manually in the above example).
 
 h = plotgrid('function', {@(y) plot(theta, y), num2cell(y,2)}, ...
     'sv', -0.03, 'staggery', 0.05, 'outputs', {'ln'});
@@ -168,10 +216,9 @@ set(h.ax(end:-2:1), 'ycolor', get(h.ln{end}, 'color'));
 h.ln = reshape(cat(1, h.ln{:}), size(h.ln));
 set(h.ln(end-1:-2:1), 'color', 'r');
 
-
-
 %%
-% You can also pair this with unclipped data to emphasize the overlap:
+% You can also pair this with unclipped data and smaller y-axs ranges to
+% emphasize patterns even more:  
 
 set(h.ax, 'clipping', 'off', 'ylim', [-2 2]);
 
