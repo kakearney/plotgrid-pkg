@@ -11,8 +11,8 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %
 % Optional input arguments (passed as parameter/value pairs):
 %
-%   size:           1 x 2 vector, indicating the number of rows (n) and
-%                   columns (m), respectively, to add to the figure.
+%   size:           1 x 2 vector, [n m], indicating the number of rows (n)
+%                   and columns (m), respectively, to add to the figure. 
 %                   Default: [1 1]
 %
 %   function:       cell array, where first element is a function handle to
@@ -60,7 +60,7 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %
 %   collabeloffset: scalar, distance column labels should be offset from the
 %                   grid of axes, expressed as a fraction of the entire
-%                   axis grid height (top of column 1 - botoom of column n)
+%                   axis grid height (top of column 1 - bottom of column n)
 %                   Default: 0.05
 %
 %   figprop:        cell array holding parameter/value pairs of figure
@@ -69,11 +69,11 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %   outputs:        cell array of strings.  If the 'function' input is
 %                   supplied, this can be used to save any outputs
 %                   returned by the called function.  The length of this
-%                   cell array should match the number of outputs of the
-%                   returned by the supplied function.  Each string will be
-%                   used as the name of a field in the output structure,
-%                   and will hold an n x m cell array holding the output
-%                   associated with each axis.
+%                   cell array should match the number of outputs returned
+%                   by the supplied function.  Each string will be used as
+%                   the name of a field in the output structure, and will
+%                   hold an n x m cell array holding the output associated
+%                   with each axis.    
 %
 %   In addition to the above parameters, any parameter accepted by the
 %   subaxis function (spacing, padding, margin), or their abbreviations,
@@ -81,27 +81,29 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %
 % Output variables:
 %
-%   h:          1 x 1 structure array of handles:
+%   h:              1 x 1 structure array of handles:
 %
-%               fig:    figure
+%                   fig:    figure
 %               
-%               ax:     n x m array, axis handles.  Geometry of this array
-%                       matches the geometry of the axes on the plot, e.g.
-%                       h.ax(1,:) refers to the top row of axes.
+%                   ax:     n x m array, axis handles.  Geometry of this
+%                           array matches the geometry of the axes on the
+%                           plot, e.g. h.ax(1,:) refers to the top row of
+%                           axes.   
 %
-%               rlab:   n x 1 array, row label text handles
+%                   rlab:   n x 1 array, row label text handles
 %
-%               clab:   m x 1 array, column label text handles
+%                   clab:   m x 1 array, column label text handles
 %
-%               yax:    floor(n/2) x m array, axis handles to offset y
-%                       axes.  These are linked to the axes in
-%                       h.ax(end-1:-2:1,:).  These are for decoration only;
-%                       see offsetaxis.m for details.
+%                   yax:    floor(n/2) x m array, axis handles to offset y
+%                           axes.  The y-limits of these are linked to the
+%                           axes in h.ax(2:2:end-1) if n is odd, or
+%                           h.ax(1:2:end-1) if n is even.  These are for
+%                           decoration only; see offsetaxis.m for details.
 %
-%               xax:    n x floor(m/2) array, axis handles to offset x
-%                       axes.  These are linked to the axes in
-%                       h.ax(:,2:2:end).  These are for decoration only;
-%                       see offsetaxis.m for details.
+%                   xax:    n x floor(m/2) array, axis handles to offset x
+%                           axes.  The x-limits of these are linked to the
+%                           axes in h.ax(:,2:2:end).  These are for
+%                           decoration only; see offsetaxis.m for details. 
 
 % Copyright 2013-2017 Kelly Kearney
 
@@ -206,6 +208,7 @@ end
 
 if Opt.staggery > 0
     h.yax = offsetaxis(h.ax(end-1:-2:1,:), 'y', Opt.staggery);
+    h.yax = h.yax(end:-1:1); % So geometry matches
     set(h.ax, 'color', 'none', 'box', 'off');
     set(h.ax(1:end-1,:), 'xcolor', 'none');
 end
