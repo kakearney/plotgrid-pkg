@@ -114,8 +114,8 @@ h =
 
 struct with fields:
 
-fig: [1&times;1 Figure]
-ax: [3&times;4 Axes]
+fig: [1x1 Figure]
+ax: [3x4 Axes]
 
 
 ```
@@ -186,65 +186,65 @@ zp
 
 xp =
 
-5&times;5 cell array
+5x5 cell array
 
 Columns 1 through 4
 
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
 
 Column 5
 
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
 
 
 yp =
 
-5&times;5 cell array
+5x5 cell array
 
 Columns 1 through 4
 
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
 
 Column 5
 
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
 
 
 zp =
 
-5&times;5 cell array
+5x5 cell array
 
 Columns 1 through 4
 
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
-[5&times;5 double]    [15&times;15 double]    [25&times;25 double]    [35&times;35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
+[5x5 double]    [15x15 double]    [25x25 double]    [35x35 double]
 
 Column 5
 
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
-[45&times;45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
+[45x45 double]
 
 
 ```
@@ -289,23 +289,23 @@ h.pcol
 
 ans =
 
-5&times;5 cell array
+5x5 cell array
 
 Columns 1 through 4
 
-[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
-[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
-[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
-[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
-[1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]    [1&times;1 Surface]
+[1x1 Surface]    [1x1 Surface]    [1x1 Surface]    [1x1 Surface]
+[1x1 Surface]    [1x1 Surface]    [1x1 Surface]    [1x1 Surface]
+[1x1 Surface]    [1x1 Surface]    [1x1 Surface]    [1x1 Surface]
+[1x1 Surface]    [1x1 Surface]    [1x1 Surface]    [1x1 Surface]
+[1x1 Surface]    [1x1 Surface]    [1x1 Surface]    [1x1 Surface]
 
 Column 5
 
-[1&times;1 Surface]
-[1&times;1 Surface]
-[1&times;1 Surface]
-[1&times;1 Surface]
-[1&times;1 Surface]
+[1x1 Surface]
+[1x1 Surface]
+[1x1 Surface]
+[1x1 Surface]
+[1x1 Surface]
 
 
 ```
@@ -327,7 +327,7 @@ h.pcol
 
 ans = 
 
-5&times;5 Surface array:
+5x5 Surface array:
 
 Surface    Surface    Surface    Surface    Surface
 Surface    Surface    Surface    Surface    Surface
