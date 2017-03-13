@@ -1,229 +1,221 @@
-function h = plotgrid(fun, varargin) %x, y, rowname, colname, varargin)
+function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %PLOTGRID Plots data from cell array in grid pattern of axes
 %
-% h = plotgrid(fun, in1, in2, in3, ...)
-% h = plotgrid(fun, in1, in2, in3, ..., rowname, colname)
-% h = plotgrid(fun, in1, in2, in3, ..., rowname, colname, prop, val, ...)
+% h = plotgrid(...)
 %
-% Input arguments:
+% This function sets up a grid of axes, returning handles in arrays with
+% the same geometry as the axes themselves, making it easier to reference
+% plotted objects.  It allows for several customization options, including
+% the margins around and spacing between axes, optional row and column
+% labels, and options to offset axes from each other.
 %
-%   fun:        function handle of plotting function.  Must have an
-%               explicit number of input arguments, so if using something
-%               that can take a variable number, use an anonymous function
-%               to specify (for example, @(y) plot(y) or @(x,y) plot(x,y)
-%               instead of @plot).
+% Optional input arguments (passed as parameter/value pairs):
 %
-%               or this can be the string 'setup', which just sets up the
-%               axes without plotting any data, 
+%   size:           1 x 2 vector, [n m], indicating the number of rows (n)
+%                   and columns (m), respectively, to add to the figure. 
+%                   Default: [1 1]
 %
-%   in#:        Equally-sized 2D cell arrays (n x m), with values
-%               corresponding to the input for the function handle. (If
-%               'setup', then a single cell array with the desired number
-%               of rows and columns should be passed).  The figure will
-%               have the same number of rows and columns as these cell
-%               arrays.  
+%   function:       cell array, where first element is a function handle to
+%                   a plotting function, and remaining elements are n x m
+%                   cell arrays of input data to that function.  A n x m
+%                   grid of axes will be created, with data plotted to
+%                   those axes corresponding to the respective input in the
+%                   cell arrays. For example, an input of {@(y) plot(y),
+%                   {rand(10,1) 1:10}} will plot the two line plots in
+%                   side-by-side axes.  If included, the size of the input
+%                   data cell arrays overrides the 'size' input to set the
+%                   axes geometry.  
+%                   Default: {}
 %
-%   rowname:    1 x n cell array of strings,  labels for each row.  If none
-%               desired, pass empty array
+%   staggery:       scalar. If non-zero, the y-axis of every other row
+%                   (starting second from the bottom) will be offset by the
+%                   specified fraction (as a fraction of the axis width,
+%                   see offsetaxis.m).  This can be combined with a
+%                   negative vertical spacing value to create overlapping
+%                   axes. 
+%                   Default: 0
 %
-%   colname:    1 x m cell array of strings, labels for each column.  If none
-%               desired, pass empty array.
+%   staggerx:       scalar.  If non-zero, the x-axis of every other column
+%                   (starting second from the left) will be offset by the
+%                   specific fraction (as a fraction of the axis height).
+%                   This can be combined with a negative horizontal spacing
+%                   to create overlapping axes.
+%                   Default: 0
 %
-% Optional input variables:
+%   rowlabel:       n x 1 cell array of strings, text labels to be applied
+%                   like a y-axis label to the left of each row in the
+%                   grid. If empty, no labels are added.  Rows are numbered
+%                   from top to bottom.    
+%                   Default: {}
 %
-%   'staggery': if included, left side of axes in every other row will be
-%               indented, with some overlap in vertical extent (see
-%               plotses.m)  
+%   collabel:       m x 1 cell array of strings, text labels to be applied
+%                   like titles to each column in the grid. If empty, no
+%                   labels are added.
+%                   Default: {} 
 %
-%   Also, any of the positioning parameters accepted by subaxis can be
-%   passed as parameter.value pairs.
+%   rowlabeloffset: scalar, distance row labels should be offset from the
+%                   grid of axes, expressed as a fraction of the entire
+%                   axis grid width (right of column m - left of column 1)
+%                   Default: 0.05
+%
+%   collabeloffset: scalar, distance column labels should be offset from the
+%                   grid of axes, expressed as a fraction of the entire
+%                   axis grid height (top of column 1 - bottom of column n)
+%                   Default: 0.05
+%
+%   figprop:        cell array holding parameter/value pairs of figure
+%                   properties to apply to the newly-created figure. 
+%
+%   outputs:        cell array of strings.  If the 'function' input is
+%                   supplied, this can be used to save any outputs
+%                   returned by the called function.  The length of this
+%                   cell array should match the number of outputs returned
+%                   by the supplied function.  Each string will be used as
+%                   the name of a field in the output structure, and will
+%                   hold an n x m cell array holding the output associated
+%                   with each axis.    
+%
+%   In addition to the above parameters, any parameter accepted by the
+%   subaxis function (spacing, padding, margin), or their abbreviations,
+%   with the exception of 'Holdaxis', can be included. 
 %
 % Output variables:
 %
-%   h:          1 x 1 structure array of handles:
+%   h:              1 x 1 structure array of handles:
 %
-%               fig:    figure
+%                   fig:    figure
 %               
-%               ax:     n x m array, axis handles
+%                   ax:     n x m array, axis handles.  Geometry of this
+%                           array matches the geometry of the axes on the
+%                           plot, e.g. h.ax(1,:) refers to the top row of
+%                           axes.   
 %
-%               rlab:   n x 1 array, row label text handles
+%                   rlab:   n x 1 array, row label text handles
 %
-%               clab:   m x 1 array, column label text handles
+%                   clab:   m x 1 array, column label text handles
+%
+%                   yax:    floor(n/2) x m array, axis handles to offset y
+%                           axes.  The y-limits of these are linked to the
+%                           axes in h.ax(2:2:end-1) if n is odd, or
+%                           h.ax(1:2:end-1) if n is even.  These are for
+%                           decoration only; see offsetaxis.m for details.
+%
+%                   xax:    n x floor(m/2) array, axis handles to offset x
+%                           axes.  The x-limits of these are linked to the
+%                           axes in h.ax(:,2:2:end).  These are for
+%                           decoration only; see offsetaxis.m for details. 
 
-% Copyright 2013 Kelly Kearney
-
-% TODO row and column labels don't work if you include x and y labels on
-% each axis
+% Copyright 2013-2017 Kelly Kearney
 
 
 %--------------------------
 % Parse input
 %--------------------------
 
-if ischar(fun) && strcmp(fun, 'setup')
-    setup = true;
-    nin = 1;
-else
-    setup = false;
+p = inputParser;
+p.KeepUnmatched = true;
+p.addParameter('size', [1 1], @(x) validateattributes(x, {'numeric'}, {'integer', 'positive', 'size', [1 2]}));
+p.addParameter('function', {}, @(x) validateattributes(x, {'cell'},{}));
+p.addParameter('staggery', 0, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
+p.addParameter('staggerx', 0, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
+p.addParameter('rowlabel', {}, @(x) validateattributes(x, {'cell'}, {'vector'}));
+p.addParameter('collabel', {}, @(x) validateattributes(x, {'cell'}, {'vector'}));
+p.addParameter('rowlabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
+p.addParameter('collabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
+p.addParameter('figprop', {}, @(x) validateattributes(x, {'cell'},{}));
+p.addParameter('outputs', {}, @(x) validateattributes(x, {'cell'},{}));
+p.parse(varargin{:});
+Opt = p.Results;
+SubaxOpt = p.Unmatched;
 
-    if ~isa(fun, 'function_handle')
-        error('First input must be a function handle');
+% If function input is provided, parse this
+
+setup = isempty(Opt.function);
+if ~setup
+    if ~isa(Opt.function{1}, 'function_handle')
+        error('First element of function input must be a function handle');
     end
-        
-    % Determine number of inputs passed to plotting function
-
-    nin = nargin(fun);
-    if nin == -1
-        error('Plotting function must accept an explicit number of input arguments');
-    end 
     
-end
-
-funin = varargin(1:nin);
-
-% Expand any plotting function inputs that aren't cell arrays
-
-iscl = cellfun(@iscell, funin);
-sz = cellfun(@size, funin(iscl), 'uni', 0);
-sz = unique(cat(1, sz{:}), 'rows');
-if size(sz,1) ~= 1
-    error('Function inputs must be equal-sized cell arrays or arrays');
-end
-
-for iin = 1:nin
-    if ~iscl(iin)
-        temp = funin{iin};
-        funin{iin} = cell(sz);
-        [funin{iin}{:}] = deal(temp);
+    nin = nargin(Opt.function{1});
+    fun = Opt.function{1};
+    funin = Opt.function(2:end);
+    
+    % Determine size of axis grid based on cell array inputs to function.
+    % All input cell arrays should be the same size; any non-cell array
+    % input is assumed to apply to all axes.
+    
+    iscl = cellfun(@(x) iscell(x) && ndims(x) <= 2, funin);    
+    
+    sz = cellfun(@size, funin(iscl), 'uni', 0);
+    sz = unique(cat(1, sz{:}), 'rows');
+    if size(sz,1) ~= 1
+        error('Function inputs must be equal-sized cell arrays');
     end
+    for iin = 1:nin
+        if ~iscl(iin)
+            temp = funin{iin};
+            funin{iin} = cell(sz);
+            [funin{iin}{:}] = deal(temp);
+        end
+    end
+    Opt.size = sz;
 end
 
-% Get other arguments
+% Check that row/column labels match
 
-if nargin == (nin + 1)
-    rowname = [];
-    colname = [];
-    axprops = cell(0);
-elseif nargin == (nin + 2)
-    rowname = varargin{nin + 1};
-    colname = [];
-    axprops = cell(0);
-elseif nargin == (nin + 3)
-    rowname = varargin{nin + 1};
-    colname = varargin{nin + 2};
-    axprops = cell(0);
-elseif nargin > (nin + 3)
-    rowname = varargin{nin + 1};
-    colname = varargin{nin + 2};
-    axprops = varargin(nin+3:end);
+if ~isempty(Opt.rowlabel) && length(Opt.rowlabel)~=Opt.size(1)
+    error('rowlabel length must match number of rows');
+end
+if ~isempty(Opt.collabel) && length(Opt.collabel)~=Opt.size(2)
+    error('collabel length must match number of columns');
+end
+    
+% Check for stagger flags
+
+if Opt.staggery > 0 && Opt.staggerx > 0
+    error('Cannot stagger both sets of axes');
 end
 
-if ~isempty(rowname) && (~isvector(rowname) || length(rowname)~=sz(1))
-    error('rowname wrong size');
-end
+% Check for output cell
 
-if ~isempty(colname) && (~isvector(colname) || length(colname)~=sz(2))
-    error('colname wrong size');
-end
+nout = length(Opt.outputs);
 
-% Check for staggered axis indicators
-
-isstr = cellfun(@ischar, axprops);
-staggerx = cellfun(@(x) ischar(x) && strcmp(x, 'staggerx'), axprops);
-axprops(staggerx) = [];
-staggerx = any(staggerx);
-
-staggery = cellfun(@(x) ischar(x) && strcmp(x, 'staggery'), axprops);
-axprops(staggery) = [];
-staggery = any(staggery);
-
-if staggery & setup
-    error('Cannot set up staggered axes without a plotting function');
-end
-
-% Check for sparse indicator
-
-usesparse =  cellfun(@(x) ischar(x) && strcmp(x, 'sparse'), axprops);
-axprops(usesparse) = [];
-usesparse = any(usesparse);
-
-if usesparse
+if ~setup
+    isemp = cell(nin,1);
     for ii = 1:nin
         isemp{ii} = cellfun('isempty', funin{ii});
     end
     isemp = cat(3, isemp{:});
     isemp = any(isemp, 3);
-else
-    isemp = false(size(funin{1}));
 end
-
-% Check for figure properties
-
-isstr = cellfun(@ischar, axprops);
-isfigprop = cellfun(@(x) ischar(x) && strcmp(x, 'figprop'), axprops);
-if any(isfigprop)
-    idx = find(isfigprop);
-    figprop = axprops{idx+1};
-    axprops([idx idx+1]) = [];
-else
-    figprop = cell(0);
-end
-
-% Check for output cell
-
-isout = cellfun(@iscell, axprops);
-if any(isout)
-    outname = axprops{isout};
-    axprops(isout) = [];
-    nout = length(outname);
-else
-    nout = 0;
-end
-
 
 %--------------------------
 % Create axes
 %--------------------------
 
-h.fig = figure(figprop{:});
+h.fig = figure(Opt.figprop{:});
 
-nrow = sz(1);
-ncol = sz(2);
+nrow = Opt.size(1);
+ncol = Opt.size(2);
 
-if ~staggerx && ~staggery
+axprops = [fieldnames(SubaxOpt) struct2cell(SubaxOpt)]';
 
-    for irow = 1:nrow
-        for icol = 1:ncol
-            if isemp(irow,icol)
-%                 h.ax(irow,icol) = subaxis(nrow, ncol, icol, irow, axprops{:});
-%                 set(h.ax(irow,icol), 'visible', 'off');
-            else
-                h.ax(irow,icol) = subaxis(nrow, ncol, icol, irow, axprops{:});
-            end
-        end
-    end
-    
-end
-
-if staggery
-    
-    htemp = plotgrid(fun, funin{:}, [], [], axprops{:});
-    axis(htemp.ax(:), 'tight'); % Trying to eliminate space on x axis, since can't adjust after staggered
-    xlim = get(htemp.ax, 'xlim');
-    close(htemp.fig);
-    xlim = minmax(cat(1, xlim{:}));
-    
+for irow = 1:nrow
     for icol = 1:ncol
-        axtemp(icol) = subaxis(1, ncol, icol, 1, axprops{:});
-        [hl, h.ax(:,icol)] = plotses(xlim, rand(2,nrow));
-        delete(hl);
+        h.ax(irow,icol) = subaxis(nrow, ncol, icol, irow, axprops{:}, 'holdaxis');
     end
-    h.ax = flipud(h.ax);
-    
 end
 
-if staggerx
-    error('Can''t stagger x axes yet... look into plotses bug');
+if Opt.staggery > 0
+    h.yax = offsetaxis(h.ax(end-1:-2:1,:), 'y', Opt.staggery);
+    h.yax = h.yax(end:-1:1); % So geometry matches
+    set(h.ax, 'color', 'none', 'box', 'off');
+    set(h.ax(1:end-1,:), 'xcolor', 'none');
+end
+if Opt.staggerx > 0
+    h.xax = offsetaxis(h.ax(:,2:2:end), 'x', Opt.staggerx);
+    set(h.ax, 'color', 'none', 'box', 'off');
+    set(h.ax(:,2:end), 'ycolor', 'none');
 end
 
 %--------------------------
@@ -231,21 +223,15 @@ end
 %--------------------------
 
 for iout = 1:nout
-    h.(outname{iout}) = cell(nrow, ncol);
+    h.(Opt.outputs{iout}) = cell(nrow, ncol);
 end
 
-
 if ~setup
-    
     for irow = 1:nrow
         for icol = 1:ncol
 
             if ~isemp(irow,icol)
-
-
-%                 axes(h.ax(irow,icol));
-%                 hold on;
-%                 
+             
                 set(h.fig, 'currentaxes', h.ax(irow,icol));
                 set(h.ax(irow,icol), 'nextplot', 'add');
                 
@@ -256,49 +242,37 @@ if ~setup
                 if nout > 0
                     [tmp{:}] = fun(invar{:});
                     for iout = 1:nout
-                        h.(outname{iout}){irow,icol} = tmp{iout};
+                        h.(Opt.outputs{iout}){irow,icol} = tmp{iout};
                     end
                 else
                     fun(invar{:});
-                end
-                
+                end                
 
             end
         end
     end
-    
 end
 
 %--------------------------
 % Add row and column labels
 %--------------------------
 
-Subax = get(h.fig, 'UserData');
+pos = reshape(get(h.ax, 'Position'), size(h.ax));
+xmid = cellfun(@(x) x(1)+x(3)/2, pos(1,:));
+ymid = cellfun(@(x) x(2)+x(4)/2, pos(:,1));
+xleft = pos{1,1}(1) - (pos{1,end}(1)+pos{1,end}(3) - pos{1,1}(1))*Opt.rowlabeloffset;
+ytop = pos{1,1}(4)+pos{1,1}(2) + (pos{1,1}(2)+pos{1,1}(4) - pos{end,1}(2))*Opt.collabeloffset;
 
-xpos = linspace(Subax.MarginLeft, 1-Subax.MarginRight, Subax.cols+1);
-ypos = linspace(1-Subax.MarginTop, Subax.MarginBottom, Subax.rows+1);
-left = xpos(1)/2;
-top = (ypos(1)+1)/2;
-xpos = (xpos(1:end-1) + xpos(2:end))./2;
-ypos = (ypos(1:end-1) + ypos(2:end))./2;
 
 labelax = axes('position', [0 0 1 1], 'visible', 'off');
 set(labelax, 'xlim', [0 1], 'ylim', [0 1], 'handlevisibility', 'off');
 
-if ~isempty(rowname)
-%     for irow = 1:nrow
-    h.rlab = text(left*ones(size(ypos)), ypos, rowname, 'parent', labelax, 'horiz', 'center', 'rotation', 90);
-%         h.rlab(irow) = suplabel('axes', h.ax(irow,:), 'ylabel', rowname{irow});
-%     end
+if ~isempty(Opt.rowlabel)
+    h.rlab = text(xleft*ones(Opt.size(1),1), ymid, Opt.rowlabel, 'parent', labelax, 'horiz', 'center', 'rotation', 90);
 end
    
-if ~isempty(colname)
-    h.clab = text(xpos, top*ones(size(xpos)), colname, 'parent', labelax, 'horiz', 'center');
-    
-%     for icol = 1:ncol
-% %         h.clab(icol) = suplabel('axes', h.ax(:, icol), 'xlabel', colname{icol});
-%         h.clab(icol) = suplabel('axes', h.ax(:, icol), 'title', colname{icol});
-%     end
+if ~isempty(Opt.collabel)
+    h.clab = text(xmid, ytop*ones(1,Opt.size(2)), Opt.collabel, 'parent', labelax, 'horiz', 'center');
 end
 
 
