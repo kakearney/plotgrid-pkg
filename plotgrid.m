@@ -118,8 +118,8 @@ p.addParameter('size', [1 1], @(x) validateattributes(x, {'numeric'}, {'integer'
 p.addParameter('function', {}, @(x) validateattributes(x, {'cell'},{}));
 p.addParameter('staggery', 0, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
 p.addParameter('staggerx', 0, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
-p.addParameter('rowlabel', {}, @(x) validateattributes(x, {'cell'}, {'vector'}));
-p.addParameter('collabel', {}, @(x) validateattributes(x, {'cell'}, {'vector'}));
+p.addParameter('rowlabel', {}, @(x) validateattributes(x, {'cell', 'string'}, {'vector'}));
+p.addParameter('collabel', {}, @(x) validateattributes(x, {'cell', 'string'}, {'vector'}));
 p.addParameter('rowlabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
 p.addParameter('collabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
 p.addParameter('figprop', {}, @(x) validateattributes(x, {'cell'},{}));
@@ -257,7 +257,11 @@ end
 % Add row and column labels
 %--------------------------
 
-pos = reshape(get(h.ax, 'Position'), size(h.ax));
+if length(h.ax) > 1
+    pos = reshape(get(h.ax, 'Position'), size(h.ax));
+else
+    pos = {get(h.ax, 'Position')};
+end
 xmid = cellfun(@(x) x(1)+x(3)/2, pos(1,:));
 ymid = cellfun(@(x) x(2)+x(4)/2, pos(:,1));
 xleft = pos{1,1}(1) - (pos{1,end}(1)+pos{1,end}(3) - pos{1,1}(1))*Opt.rowlabeloffset;
