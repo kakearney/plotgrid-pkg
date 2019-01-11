@@ -120,7 +120,7 @@ for iax = 1:numel(hax)
                        'xcolor', col{iax});
         set(hax(iax), 'ycolor', col{iax}, 'ytick', []);
 
-        set(hy(iax), 'ylim', get(hax(iax), 'ylim'));
+        set(hy(iax), 'ylim', get(hax(iax), 'ylim'), 'ydir', get(hax(iax), 'ydir'));
         hlink = linkprop([hax(iax) hy(iax)], 'YLim');
         setappdata(hax(iax), 'yoffsetlink', hlink);
         
@@ -143,7 +143,7 @@ for iax = 1:numel(hax)
                        'ycolor', col{iax});
         set(hax(iax), 'xcolor', col{iax}, 'xtick', []);
 
-        set(hx(iax), 'xlim', get(hax(iax), 'xlim'));
+        set(hx(iax), 'xlim', get(hax(iax), 'xlim'), 'xdir', get(hax(iax), 'xdir'));
         hlink = linkprop([hax(iax) hx(iax)], 'XLim');
         setappdata(hax(iax), 'xoffsetlink', hlink);
         
