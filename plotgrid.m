@@ -66,6 +66,9 @@ function h = plotgrid(varargin) %x, y, rowname, colname, varargin)
 %   figprop:        cell array holding parameter/value pairs of figure
 %                   properties to apply to the newly-created figure. 
 %
+%   figure:         figure handle, if included, axes will be added to this
+%                   existing figure rather than creating a new one
+%
 %   outputs:        cell array of strings.  If the 'function' input is
 %                   supplied, this can be used to save any outputs
 %                   returned by the called function.  The length of this
@@ -124,6 +127,8 @@ p.addParameter('rowlabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {
 p.addParameter('collabeloffset', 0.05, @(x) validateattributes(x, {'numeric'}, {'scalar', 'nonnegative'}));
 p.addParameter('figprop', {}, @(x) validateattributes(x, {'cell'},{}));
 p.addParameter('outputs', {}, @(x) validateattributes(x, {'cell'},{}));
+p.addParameter('figure', [], @(x) validateattributes(x, {'numeric','matlab.ui.Figure'},{'scalar'}));
+
 p.parse(varargin{:});
 Opt = p.Results;
 SubaxOpt = p.Unmatched;
@@ -193,7 +198,11 @@ end
 % Create axes
 %--------------------------
 
-h.fig = figure(Opt.figprop{:});
+if isempty(Opt.figure)
+    h.fig = figure(Opt.figprop{:});
+else
+    figure(Opt.figure);
+end
 
 nrow = Opt.size(1);
 ncol = Opt.size(2);
