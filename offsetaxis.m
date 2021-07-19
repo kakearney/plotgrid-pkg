@@ -119,7 +119,17 @@ for iax = 1:numel(hax)
                        'color', 'none', ...
                        'xcolor', col{iax});
         set(hax(iax), 'ycolor', col{iax}, 'ytick', []);
-
+        if ishg2
+            switch class(hax(iax).YAxis)
+                case 'matlab.graphics.axis.decorator.DatetimeRuler'
+                    set(hy(iax), 'YAxis', matlab.graphics.axis.decorator.DatetimeRuler);
+                case 'matlab.graphics.axis.decorator.DurationRuler'
+                    set(hy(iax), 'YAxis', matlab.graphics.axis.decorator.DurationRuler);
+                case 'matlab.graphics.axis.decorator.CategoricalRuler'
+                    set(hy(iax), 'YAxis', matlab.graphics.axis.decorator.CategoricalRuler);
+            end
+        end
+        
         set(hy(iax), 'ylim', get(hax(iax), 'ylim'), 'ydir', get(hax(iax), 'ydir'));
         hlink = linkprop([hax(iax) hy(iax)], 'YLim');
         setappdata(hax(iax), 'yoffsetlink', hlink);
@@ -141,6 +151,16 @@ for iax = 1:numel(hax)
                        'position', newpos, ...
                        'color', 'none', ...
                        'ycolor', col{iax});
+        if ishg2
+            switch class(hax(iax).XAxis)
+                case 'matlab.graphics.axis.decorator.DatetimeRuler'
+                    set(hx(iax), 'XAxis', matlab.graphics.axis.decorator.DatetimeRuler);
+                case 'matlab.graphics.axis.decorator.DurationRuler'
+                    set(hx(iax), 'XAxis', matlab.graphics.axis.decorator.DurationRuler);
+                case 'matlab.graphics.axis.decorator.CategoricalRuler'
+                    set(hx(iax), 'XAxis', matlab.graphics.axis.decorator.CategoricalRuler);
+            end
+        end
         set(hax(iax), 'xcolor', col{iax}, 'xtick', []);
 
         set(hx(iax), 'xlim', get(hax(iax), 'xlim'), 'xdir', get(hax(iax), 'xdir'));
