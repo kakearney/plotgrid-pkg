@@ -130,7 +130,11 @@ for iax = 1:numel(hax)
             end
         end
         
-        set(hy(iax), 'ylim', get(hax(iax), 'ylim'), 'ydir', get(hax(iax), 'ydir'));
+        set(hx(iax), ...
+                'xlim', get(hax(iax), 'xlim'), ...
+                'xdir', get(hax(iax), 'xdir'), ...
+                'TickDir', get(hax(iax), 'TickDir')
+        );
         hlink = linkprop([hax(iax) hy(iax)], 'YLim');
         setappdata(hax(iax), 'yoffsetlink', hlink);
         
